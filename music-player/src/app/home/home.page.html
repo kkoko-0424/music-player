@@ -1,0 +1,25 @@
+<div class="container">
+  <h1>･゜ﾟ･*:.｡ Music Player .｡.:*･*</h1>
+
+  <div class="cover-box">
+    <div class="icon-center">
+      🎵
+    </div>
+  </div>  
+
+  <div id="nowPlaying" class="now-playing">Now playing: -</div>
+
+  <input type="file" id="fileInput" accept="audio/mp3" />
+
+  <ul id="playlist"></ul>
+
+  <div class="controls">
+    <button onclick="playPrev()">⏮ Prev</button>
+    <button onclick="playAudio()">⏵ Play</button>
+    <button onclick="pauseAudio()">⏸ Pause</button>
+    <button onclick="playNext()">⏭ Next</button>
+  </div>
+</div>
+
+<audio id="audioPlayer" controls hidden></audio>
+
