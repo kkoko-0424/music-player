@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8">
+  <title>Music Player</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="bg-grid"></div>
+  <h1> ･゜ﾟ･*:.｡ Music Player .｡.:*･*</h1>
+  <div class="cover-box">
+    <p style="margin-top: 120px;">🎵</p>
+  </div>
+  <div id="nowPlaying" class="now-playing">Now playing: -</div>
+
+
+  <input type="file" id="fileInput" accept="audio/mp3">
+
+  <ul id="playlist"></ul>
+
+  <div class="controls">
+    <button onclick="playPrev()">⏮ Prev</button>
+    <button onclick="playAudio()">⏵ Play</button>
+    <button onclick="pauseAudio()">⏸ Pause</button>
+    <button onclick="playNext()">⏭ Next</button>
+  </div>
+  
+  
+
+  <audio id="audioPlayer" controls hidden></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
