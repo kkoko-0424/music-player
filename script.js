@@ -4,41 +4,67 @@ const fileInput = document.getElementById('fileInput');
 const playlistElement = document.getElementById('playlist');
 const audioPlayer = document.getElementById('audioPlayer');
 
-// 多首歌曲累加加入播放清單
-fileInput.addEventListener('change', function () {
-  const newFiles = Array.from(fileInput.files);
-  playlist = playlist.concat(newFiles);
-  if (playlist.length === newFiles.length) {
-    // 第一次加入，立刻播放
-    loadAndPlay(0);
+// 初始化：加入 demo 並讀取儲存清單
+window.addEventListener('load', () => {
+  const demo = {
+    name: 'demo.mp3',
+    url: 'assets/demo.mp3',
+    isDemo: true
+  };
+  playlist.push(demo);
+
+  const saved = localStorage.getItem('playlist');
+  if (saved) {
+    const savedTracks = JSON.parse(saved);
+    savedTracks.forEach(track => {
+      playlist.push({
+        name: track.name,
+        file: null,
+        isDemo: false
+      });
+    });
   }
+
+  currentIndex = 0;
+  loadAndPlay(currentIndex);
   displayPlaylist();
-  savePlaylist();
 });
 
-// 顯示播放清單，每首歌一個刪除按鈕
+// 使用者上傳歌曲後加入清單
+fileInput.addEventListener('change', function () {
+  const newFiles = Array.from(fileInput.files).map(file => ({
+    name: file.name,
+    file: file,
+    isDemo: false
+  }));
+  playlist = playlist.concat(newFiles);
+  if (playlist.length === newFiles.length + 1) {
+    loadAndPlay(1);
+  }
+  displayPlaylist();
+  savePlaylist(); // 儲存清單
+});
+
+// 顯示播放清單
 function displayPlaylist() {
   playlistElement.innerHTML = '';
-  playlist.forEach((file, index) => {
+  playlist.forEach((track, index) => {
     const li = document.createElement('li');
     li.style.display = 'flex';
     li.style.justifyContent = 'space-between';
     li.style.alignItems = 'center';
     li.style.padding = '5px 10px';
 
-    // 歌名部分
     const span = document.createElement('span');
-    span.textContent = file.name;
+    span.textContent = track.name + (track.isDemo ? ' (Demo)' : '');
     span.style.cursor = 'pointer';
     if (index === currentIndex) span.style.fontWeight = 'bold';
 
-    // 點選歌名 → 播放
     span.addEventListener('click', () => {
       currentIndex = index;
       loadAndPlay(currentIndex);
     });
 
-    // 刪除按鈕
     const delBtn = document.createElement('button');
     delBtn.textContent = '刪除';
     delBtn.style.backgroundColor = '#330020';
@@ -58,16 +84,23 @@ function displayPlaylist() {
   });
 }
 
-// 播放歌曲
+// 播放指定曲目
 function loadAndPlay(index) {
-  const file = playlist[index];
-  if (!file) return;
-  audioPlayer.src = URL.createObjectURL(file);
+  const track = playlist[index];
+  if (!track) return;
+  if (track.isDemo) {
+    audioPlayer.src = track.url;
+  } else if (track.file) {
+    audioPlayer.src = URL.createObjectURL(track.file);
+  } else {
+    audioPlayer.src = '';
+  }
   audioPlayer.play();
-  document.getElementById('nowPlaying').textContent = `Now playing: ${file.name}`;
+  document.getElementById('nowPlaying').textContent = `Now playing: ${track.name}`;
   displayPlaylist();
 }
 
+// 播放控制按鈕
 function playAudio() {
   audioPlayer.play();
 }
@@ -86,26 +119,23 @@ function playPrev() {
   loadAndPlay(currentIndex);
 }
 
-function savePlaylist() {
-  const names = playlist.map(file => file.name);
-  localStorage.setItem('playlist', JSON.stringify(names));
-}
-
-function loadSavedPlaylist() {
-  const names = JSON.parse(localStorage.getItem('playlist')) || [];
-  playlistElement.innerHTML = '';
-  names.forEach(name => {
-    const li = document.createElement('li');
-    li.textContent = `${name} (需重新上傳)`;
-    playlistElement.appendChild(li);
-  });
-}
-
 function removeFromPlaylist(index) {
   playlist.splice(index, 1);
-  if (currentIndex >= index) currentIndex = Math.max(0, currentIndex - 1);
+  if (playlist.length === 0) {
+    audioPlayer.pause();
+    audioPlayer.src = '';
+    document.getElementById('nowPlaying').textContent = 'Now playing: -';
+    currentIndex = 0;
+  } else {
+    if (currentIndex >= index) currentIndex = Math.max(0, currentIndex - 1);
+    loadAndPlay(currentIndex);
+  }
   displayPlaylist();
-  savePlaylist();
+  savePlaylist(); // 更新儲存
 }
 
-window.onload = loadSavedPlaylist;
+// 儲存播放清單到 localStorage（不含 demo 與檔案內容）
+function savePlaylist() {
+  const savable = playlist.filter(t => !t.isDemo).map(t => ({ name: t.name }));
+  localStorage.setItem('playlist', JSON.stringify(savable));
+}

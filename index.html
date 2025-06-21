@@ -2,20 +2,21 @@
 <html lang="en">
 <head>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-
   <meta charset="UTF-8">
   <title>Music Player</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="bg-grid"></div>
-  <h1> ･゜ﾟ･*:.｡ Music Player .｡.:*･*</h1>
+  <h1>･゜ﾟ･*:.｡ Music Player .｡.:*･*</h1>
+
   <div class="cover-box">
-    <p style="margin-top: 120px;">🎵</p>
+    <p style="margin-top: 120px; font-size: 2rem;">🎵</p>
   </div>
-  <div id="nowPlaying" class="now-playing">Now playing: -</div>
 
+  <div id="nowPlaying" class="now-playing">Now playing: demo.mp3</div>
 
+  <!-- 上傳音樂功能 -->
   <input type="file" id="fileInput" accept="audio/mp3">
 
   <ul id="playlist"></ul>
@@ -26,10 +27,12 @@
     <button onclick="pauseAudio()">⏸ Pause</button>
     <button onclick="playNext()">⏭ Next</button>
   </div>
-  
-  
 
-  <audio id="audioPlayer" controls hidden></audio>
+  <!-- 預設播放 demo.mp3 -->
+  <audio id="audioPlayer" controls hidden autoplay>
+    <source src="assets/demo.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
 
   <script src="script.js"></script>
 </body>
